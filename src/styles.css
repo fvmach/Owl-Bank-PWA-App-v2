@@ -91,3 +91,13 @@ body {
   list-style-type: none;
   padding: 0;
 }
+
+.sending {
+  color: gray;
+  font-style: italic;
+}
+
+.sending .status {
+  color: lightgray;
+  font-size: 0.8em;
+}
