@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owl Bank - Banking Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://media.twiliocdn.com/sdk/js/conversations/v2.4/twilio-conversations.min.js"></script>
+  <script src="https://owl-bank-finserv-demo-2134.twil.io/twilio.min.js"></script>
+  <script defer src="https://owl-bank-finserv-demo-2134.twil.io/app.js"></script>
+</head>
+<body>
+  <div class="app">
+    <h1 class="ai-header">Owl Bank - AI Assistant</h1>
+
+    <!-- Chat Section -->
+    <div id="chat-container" class="paste-box">
+      <h2 class="paste-heading">Chat</h2>
+      <div id="chat-messages" class="paste-chat-box"></div>
+      <div class="paste-chat-input">
+        <input type="text" id="message-input" class="paste-input" placeholder="Type a message...">
+        <button class="paste-button" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <!-- Voice Section -->
+    <div id="voice-container" class="paste-box">
+      <h2 class="paste-heading">Voice Call</h2>
+      <button class="paste-button" onclick="startCall()">Call</button>
+      <button class="paste-danger-button" onclick="endCall()">Hang Up</button>
+    </div>
+
+    <!-- Loyalty Program Mockup -->
+    <div class="loyalty-mockup paste-box">
+        <h2 class="paste-heading">Your Loyalty Program</h2>
+        <div class="loyalty-mockup-container">
+            <div class="loyalty-mockup-item">
+                <h3 class="paste-subheading">Points</h3>
+                <p id="loyalty-points" class="paste-text">0</p>
+            </div>
+            <div class="loyalty-mockup-item">
+                <h3 class="paste-subheading">Level</h3>
+                <p id="loyalty-level" class="paste-text">Bronze</p>
+            </div>
+            <div class="loyalty-mockup-item">
+                <h3 class="paste-subheading">Next Level</h3>
+                <p id="loyalty-next-level" class="paste-text">Silver</p>
+                <p id="loyalty-next-level-points" class="paste-text">1000 Points</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banking Mockup -->
+    <div class="banking-mockup paste-box">
+        <h2 class="paste-heading">Your Account</h2>
+        <div class="banking-mockup-container">
+            <div class="banking-mockup-item">
+                <h3 class="paste-subheading">Account Balance</h3>
+                <p id="account-balance" class="paste-text">$0.00</p>
+            </div>
+            <div class="banking-mockup-item">
+                <h3 class="paste-subheading">Recent Transactions</h3>
+                <ul id="recent-transactions" class="paste-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credit Card Mockup -->
+    <div class="credit-card-mockup paste-box">
+        <h2 class="paste-heading">Your Credit Card</h2>
+        <div class="credit-card-mockup-container">
+            <div class="credit-card-mockup-item">
+                <h3 class="paste-subheading">Card Number</h3>
+                <p id="card-number" class="paste-text">Final 0000</p>
+            </div>
+            <div class="credit-card-mockup-item">
+                <h3 class="paste-subheading">Card Holder</h3>
+                <p id="card-holder" class="paste-text">John Doe</p>
+            </div>
+            <div class="credit-card-mockup-item">
+                <h3 class="paste-subheading">Next Payment</h3>
+                <p id="next-payment" class="paste-text">$0.00</p>
+                <p id="next-payment-date" class="paste-text">Due on 00/00/0000</p>
+                <p id="next-payment-status" class="paste-text">Status: Paid</p>
+                <p id="next-payment-button" class="paste-button">Pay Now</p>
+            </div>
+        </div>
+    </div>
+  </div>
+</body>
+</html>

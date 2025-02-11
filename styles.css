@@ -1,0 +1,93 @@
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+.app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.ai-header {
+  text-align: center;
+  color: #333;
+}
+
+.paste-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.paste-heading {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.paste-subheading {
+  font-size: 1.2em;
+  margin-bottom: 5px;
+}
+
+.paste-text {
+  font-size: 1em;
+  color: #555;
+}
+
+.paste-input {
+  width: calc(100% - 100px);
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.paste-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.paste-button:hover {
+  background-color: #0056b3;
+}
+
+.paste-danger-button {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.paste-danger-button:hover {
+  background-color: #c82333;
+}
+
+.paste-chat-box {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.paste-chat-input {
+  display: flex;
+  align-items: center;
+}
+
+.paste-list {
+  list-style-type: none;
+  padding: 0;
+}
