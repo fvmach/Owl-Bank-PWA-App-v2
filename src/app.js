@@ -1,6 +1,7 @@
 /********************************************************************
  *  Owl Bank PWA - Twilio Integration (Fixed Conversations Handling)
  ********************************************************************/
+
 const TOKEN_URL = 'https://owl-bank-finserv-demo-2134.twil.io/initialize-twilio-sdks';
 
 let conversationsClient;
@@ -251,7 +252,7 @@ async function sendMessage() {
 
 
 /**
- * Display chat messages
+ * Display chat messages with author name
  */
 function displayMessage(text, direction, isSending = false) {
   const chatContainer = document.getElementById("chat-messages");
@@ -261,21 +262,29 @@ function displayMessage(text, direction, isSending = false) {
   messageEl.className = `chat-bubble ${direction}`;
   if (isSending) messageEl.classList.add("sending"); // Mark as sending
 
+  // Create author label
+  const authorEl = document.createElement("div");
+  authorEl.className = "chat-author";
+  authorEl.textContent = direction === "outgoing" ? "You:" : "AI Assistant:";
+
   // Create message text
   const textEl = document.createElement("span");
   textEl.textContent = text;
 
-  // Create status indicator
-  const statusEl = document.createElement("sub"); // Small subscript for status
+  // Create status indicator (if sending)
+  const statusEl = document.createElement("sub");
   statusEl.className = "status";
-  statusEl.textContent = isSending ? "Sending..." : ""; // Show sending status
+  statusEl.textContent = isSending ? "✓" : "✓✓";
 
   // Append elements
+  messageEl.appendChild(authorEl);
   messageEl.appendChild(textEl);
   messageEl.appendChild(statusEl);
   chatContainer.appendChild(messageEl);
 
-  // Return message element so we can update it later
+  // Auto-scroll to the bottom
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+
   return messageEl;
 }
 
@@ -292,6 +301,195 @@ function removeSystemMessage(text) {
   });
 }
 
+
+
+/********************************************************************
+ *  Owl Bank PWA - Twilio Voice SDK Implementation (Reusing Token)
+ ********************************************************************/
+let voiceDevice;
+
+/**
+ * Initialize Twilio Voice Device using the existing token
+ */
+async function initializeVoice(token) {
+    console.log("Initializing Twilio Voice...");
+
+    try {
+        voiceDevice = new Twilio.Device(token, {
+            closeProtection: true,
+            enableRingingState: true
+        });
+
+        voiceDevice.on("ready", () => console.log("Twilio Voice Device is ready."));
+        voiceDevice.on("error", (error) => console.error("Twilio Voice Error:", error));
+        voiceDevice.on("connect", () => console.log("Call connected."));
+        voiceDevice.on("disconnect", () => console.log("Call disconnected."));
+    } catch (error) {
+        console.error("Error initializing Twilio Voice:", error);
+    }
+}
+
+/**
+ * Start a Twilio Voice Call and update UI
+ */
+async function startCall() {
+  if (!voiceDevice) {
+      console.error("Twilio Voice is not initialized.");
+      return;
+  }
+
+  try {
+      console.log("Starting Twilio Voice call...");
+      const connection = voiceDevice.connect();
+      
+      connection.on("accept", () => {
+          console.log("Call accepted.");
+          updateVoiceButtonState(true);
+      });
+
+      connection.on("disconnect", () => {
+          console.log("Call ended.");
+          updateVoiceButtonState(false);
+      });
+
+  } catch (error) {
+      console.error("Error starting call:", error);
+  }
+}
+
+/**
+* End the Active Call and update UI
+*/
+function endCall() {
+  if (voiceDevice && voiceDevice.activeConnection()) {
+      console.log("Ending Twilio Voice call...");
+      voiceDevice.activeConnection().disconnect();
+      updateVoiceButtonState(false);
+  } else {
+      console.warn("No active call to end.");
+  }
+}
+
+let isCallActive = false; // Track call state
+let currentCall = null; // Store active call
+
+/**
+ * Toggle Call Start/End
+ */
+async function toggleCall() {
+    const voiceButton = document.getElementById("voice-toggle-btn");
+    const voiceIcon = document.getElementById("voice-icon");
+
+    if (isCallActive) {
+        // End the call
+        if (currentCall) {
+            console.log("Ending Twilio Voice call...");
+            currentCall.disconnect();
+        }
+        isCallActive = false;
+        voiceButton.classList.remove("active");
+        voiceIcon.src = "https://www.svgrepo.com/show/51954/microphone.svg"; // Normal mic icon
+    } else {
+        // Start the call
+        if (!voiceDevice) {
+            console.error("Twilio Voice is not initialized.");
+            return;
+        }
+
+        console.log("Starting Twilio Voice call...");
+        currentCall = voiceDevice.connect();
+
+        currentCall.on("accept", () => {
+            console.log("Call accepted.");
+            isCallActive = true;
+            voiceButton.classList.add("active");
+            voiceIcon.src = "https://www.svgrepo.com/show/327436/mic-off.svg"; // Mic off icon
+        });
+
+        currentCall.on("disconnect", () => {
+            console.log("Call ended.");
+            isCallActive = false;
+            voiceButton.classList.remove("active");
+            voiceIcon.src = "https://www.svgrepo.com/show/51954/microphone.svg"; // Normal mic icon
+        });
+    }
+}
+
+
+
+// Modify the existing `initialize()` function to include voice setup
+async function initialize() {
+    console.log("Initializing Twilio SDKs...");
+    await waitForTwilio();
+
+    try {
+        const identity = getUserIdentity();
+        console.log("User identity:", identity);
+
+        // Fetch a token from Twilio (Chat + Voice)
+        const data = await fetchToken(identity);
+        if (!data.token) {
+            throw new Error("Failed to retrieve token.");
+        }
+
+        console.log("Token received. Initializing Twilio Conversations...");
+
+        // Initialize Conversations Client
+        conversationsClient = await Twilio.Conversations.Client.create(data.token);
+        conversationsClient.on('tokenExpired', refreshToken);
+        console.log("Twilio Conversations Ready");
+
+        // Initialize Voice SDK using the same token
+        initializeVoice(data.token);
+
+        // Load or create a conversation
+        await createOrLoadConversation(identity);
+
+        // Load previous messages
+        await loadPreviousMessages();
+        
+        // Add event listeners for new messages
+        activeConversation.on("messageAdded", (message) => {
+            const identity = getUserIdentity();
+            if (message.author === identity) {
+                // Find and update the "sending" message
+                const messages = document.querySelectorAll(".chat-bubble.outgoing.sending");
+                if (messages.length > 0) {
+                    const lastMessage = messages[messages.length - 1];
+                    lastMessage.classList.remove("✓");
+                    lastMessage.querySelector(".status").textContent = "✓✓";
+                    return;
+                }
+            }
+
+            // Display incoming messages
+            console.log("New message received:", message.body);
+            displayMessage(message.body, "incoming");
+        });
+
+        // Listen for AI Typing Events
+        activeConversation.on("typingStarted", (participant) => {
+            if (participant.identity.includes("system") || participant.identity.includes("ai_assistant")) {
+                displayMessage("AI is typing...", "system");
+            }
+        });
+
+        activeConversation.on("typingEnded", (participant) => {
+            if (participant.identity.includes("system") || participant.identity.includes("ai_assistant")) {
+                removeSystemMessage("AI is typing...");
+            }
+        });
+
+        // Track token expiry & auto-refresh
+        tokenExpirationTime = Date.now() + 3600000; // 1 hour
+        setInterval(refreshToken, 3300000); // Refresh at 55 minutes
+    } catch (error) {
+        console.error("Initialization error:", error);
+    }
+}
+
+
+
 // Initialize everything when the page loads
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Page loaded, running initialize...");
@@ -299,4 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Expose functions globally
   window.sendMessage = sendMessage;
+  // Expose voice functions globally
+  window.toggleCall = toggleCall;
+
 });
