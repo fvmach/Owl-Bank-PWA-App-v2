@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Owl Bank</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="login.js"></script>
+</head>
+<body>
+  <div class="app">
+    <h1 class="ai-header">Login</h1>
+    <div class="paste-box">
+      <form id="login-form">
+        <label class="paste-subheading">Email</label>
+        <input type="email" id="email" class="paste-input" required>
+
+        <button type="submit" class="paste-button">Send OTP</button>
+      </form>
+      <p class="paste-text">Don't have an account? <a href="register.html">Register</a></p>
+    </div>
+
+    <div id="otp-section" class="paste-box" style="display: none;">
+        <h2 class="paste-heading">Enter OTP</h2>
+        <input type="text" id="otp" class="paste-input" placeholder="Enter OTP" required>
+        <button class="paste-button" onclick="verifyOtp()">Verify OTP</button>
+        <p>Didn't receive the code? Try another method:</p>
+        <button class="paste-button" onclick="requestOtpAlternative('sms')">Send Code via SMS</button>
+        <button class="paste-button" onclick="requestOtpAlternative('email')">Send Code via Email</button>
+        <button class="paste-button" onclick="requestOtpAlternative('call')">Send Code via Voice Call</button>
+      </div>
+      
+  </div>
+</body>
+</html>

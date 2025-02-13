@@ -18,98 +18,91 @@
   <script defer src="https://owl-bank-finserv-demo-2134.twil.io/app.js"></script>
 </head>
 <body>
-  <div class="app">
-    <h1 class="ai-header">Owl Bank</h1>
 
-    <!-- Chat Section -->
-    <div id="chat-container" class="paste-box">
-      <div class="paste-chat-header">
-        <svg role="img" aria-hidden="true" width="5%" height="5%" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-labelledby="ArtificialIntelligenceIcon-:r19q:"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M13.699 2.447c-.01 2.674-1.297 3.917-3.962 3.955-.595.008-.588.899.007.898 2.735-.004 3.928 1.287 3.955 3.957.005.58.868.598.897.017.135-2.699 1.396-3.984 3.953-3.974.594.002.605-.885.012-.898-2.739-.062-3.974-1.345-3.964-3.951.002-.599-.896-.602-.898-.004zm.444 2.432l.06.131c.394.81 1.015 1.41 1.864 1.794l.105.045-.035.016c-.837.387-1.463 1.015-1.873 1.872l-.078.17-.017-.044c-.37-.89-.98-1.547-1.838-1.958l-.155-.07c.837-.37 1.46-.95 1.866-1.743l.101-.213z"></path><path fill="currentColor" d="M4.5 10.132a5.87 5.87 0 015.871-5.868.5.5 0 100-1A6.87 6.87 0 003.5 10.132a6.87 6.87 0 004.417 6.417.5.5 0 00.357-.934A5.87 5.87 0 014.5 10.132zm8.368 5.358a.5.5 0 01.202.96 6.851 6.851 0 01-2.67.55h-.029a.5.5 0 110-1h.024a5.85 5.85 0 002.282-.47.499.499 0 01.191-.04zm3.657-3.628a.5.5 0 01.297.642 6.863 6.863 0 01-1.187 2.043.5.5 0 01-.766-.643 5.86 5.86 0 001.014-1.745.5.5 0 01.642-.297z"></path></svg>
-        <h2 class="paste-heading">Owl Bank AI Assistant</h2>
+  <!-- User Profile Top Bar -->
+  <div id="user-profile" class="profile-bar">
+    <div id="profile-dropdown-container">
+      <div id="avatar-container">  <!-- New container to hold the avatar -->
+        <svg id="profile-avatar" class="profile-avatar" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="15" cy="15" r="15" fill="#e8f7f9" stroke="#333" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <circle id="Ellipse_17" data-name="Ellipse 17" cx="4.565" cy="4.565" r="4.565" transform="translate(1418.435 192.13)" fill="#fff1b6" stroke="#333" stroke-miterlimit="10" stroke-width="2"/>
+          <path id="Path_53" data-name="Path 53" d="M1423,213a14.928,14.928,0,0,0,9.4-3.323,9.773,9.773,0,0,0-18.808,0A14.928,14.928,0,0,0,1423,213Z" fill="#fff1b6" stroke="#333" stroke-miterlimit="10" stroke-width="2"/>
+        </svg>
       </div>
-      <div id="chat-messages" class="paste-chat-box"></div>
-      <div class="paste-chat-input">
-        <input type="text" id="message-input" class="paste-input" placeholder="Type a message..." />
-
-        <button class="paste-button" onclick="sendMessage()">Send</button>
-        <div class="ai-button-effect">
-          <button id="voice-toggle-btn" class="voice-button" onclick="toggleCall()">
-            <svg class="voice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-              <g>
-                <g>
-                  <path d="m439.5,236c0-11.3-9.1-20.4-20.4-20.4s-20.4,9.1-20.4,20.4c0,70-64,126.9-142.7,126.9-78.7,0-142.7-56.9-142.7-126.9 0-11.3-9.1-20.4-20.4-20.4s-20.4,9.1-20.4,20.4c0,86.2 71.5,157.4 163.1,166.7v57.5h-23.6c-11.3,0-20.4,9.1-20.4,20.4 0,11.3 9.1,20.4 20.4,20.4h88c11.3,0 20.4-9.1 20.4-20.4 0-11.3-9.1-20.4-20.4-20.4h-23.6v-57.5c91.6-9.3 163.1-80.5 163.1-166.7z"/>
-                  <path d="m256,323.5c51,0 92.3-41.3 92.3-92.3v-127.9c0-51-41.3-92.3-92.3-92.3s-92.3,41.3-92.3,92.3v127.9c0,51 41.3,92.3 92.3,92.3zm-52.3-220.2c0-28.8 23.5-52.3 52.3-52.3s52.3,23.5 52.3,52.3v127.9c0,28.8-23.5,52.3-52.3,52.3s-52.3-23.5-52.3-52.3v-127.9z"/>
-                </g>
-              </g>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  <!-- Voice Section
-  <div id="voice-container" class="paste-box">
-    <h2 class="paste-heading">Voice Call</h2>
-    <button id="voice-toggle-btn" class="voice-button" onclick="toggleCall()">
-      <img id="voice-icon" src="https://www.svgrepo.com/show/51954/microphone.svg" alt="Microphone">
-    </button>
-  </div> -->
-
-    <!-- Loyalty Program Mockup -->
-    <div class="loyalty-mockup paste-box">
-      <h2 class="paste-heading">Your Loyalty Program</h2>
-      <div class="loyalty-mockup-container">
-        <div class="loyalty-mockup-item">
-          <h3 class="paste-subheading">Points</h3>
-          <p id="loyalty-points" class="paste-text">0</p>
-        </div>
-        <div class="loyalty-mockup-item">
-          <h3 class="paste-subheading">Level</h3>
-          <p id="loyalty-level" class="paste-text">Bronze</p>
-        </div>
-        <div class="loyalty-mockup-item">
-          <h3 class="paste-subheading">Next Level</h3>
-          <p id="loyalty-next-level" class="paste-text">Silver</p>
-          <p id="loyalty-next-level-points" class="paste-text">1000 Points</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Banking Mockup -->
-    <div class="banking-mockup paste-box">
-      <h2 class="paste-heading">Your Account</h2>
-      <div class="banking-mockup-container">
-        <div class="banking-mockup-item">
-          <h3 class="paste-subheading">Account Balance</h3>
-          <p id="account-balance" class="paste-text">$0.00</p>
-        </div>
-        <div class="banking-mockup-item">
-          <h3 class="paste-subheading">Recent Transactions</h3>
-          <ul id="recent-transactions" class="paste-list"></ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- Credit Card Mockup -->
-    <div class="credit-card-mockup paste-box">
-      <h2 class="paste-heading">Your Credit Card</h2>
-      <div class="credit-card-mockup-container">
-        <div class="credit-card-mockup-item">
-          <h3 class="paste-subheading">Card Number</h3>
-          <p id="card-number" class="paste-text">Final 0000</p>
-        </div>
-        <div class="credit-card-mockup-item">
-          <h3 class="paste-subheading">Card Holder</h3>
-          <p id="card-holder" class="paste-text">John Doe</p>
-        </div>
-        <div class="credit-card-mockup-item">
-          <h3 class="paste-subheading">Next Payment</h3>
-          <p id="next-payment" class="paste-text">$0.00</p>
-          <p id="next-payment-date" class="paste-text">Due on 00/00/0000</p>
-          <p id="next-payment-status" class="paste-text">Status: Paid</p>
-          <p id="next-payment-button" class="paste-button">Pay Now</p>
-        </div>
+      <span id="profile-name" class="profile-name">Loading...</span>
+      <div id="profile-dropdown" class="dropdown hidden">
+        <button id="view-profile">Profile</button>
+        <button id="logout">Logout</button>
       </div>
     </div>
   </div>
+
+  <!-- Profile Modal -->
+  <div id="profile-modal" class="modal hidden">
+    <div id="modal-content" class="modal-content">
+      <span class="close">&times;</span>
+      <h2>User Profile</h2>
+    </div>
+  </div>
+
+  <div class="app">
+    <h1 class="logo">Owl Bank</h1>
+
+  <!-- Chat Section -->
+  <div id="chat-container" class="paste-box">
+    <div class="paste-chat-header">
+      <svg role="img" aria-hidden="true" width="5%" height="5%" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-labelledby="ArtificialIntelligenceIcon-:r19q:"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M13.699 2.447c-.01 2.674-1.297 3.917-3.962 3.955-.595.008-.588.899.007.898 2.735-.004 3.928 1.287 3.955 3.957.005.58.868.598.897.017.135-2.699 1.396-3.984 3.953-3.974.594.002.605-.885.012-.898-2.739-.062-3.974-1.345-3.964-3.951.002-.599-.896-.602-.898-.004zm.444 2.432l.06.131c.394.81 1.015 1.41 1.864 1.794l.105.045-.035.016c-.837.387-1.463 1.015-1.873 1.872l-.078.17-.017-.044c-.37-.89-.98-1.547-1.838-1.958l-.155-.07c.837-.37 1.46-.95 1.866-1.743l.101-.213z"></path><path fill="currentColor" d="M4.5 10.132a5.87 5.87 0 015.871-5.868.5.5 0 100-1A6.87 6.87 0 003.5 10.132a6.87 6.87 0 004.417 6.417.5.5 0 00.357-.934A5.87 5.87 0 014.5 10.132zm8.368 5.358a.5.5 0 01.202.96 6.851 6.851 0 01-2.67.55h-.029a.5.5 0 110-1h.024a5.85 5.85 0 002.282-.47.499.499 0 01.191-.04zm3.657-3.628a.5.5 0 01.297.642 6.863 6.863 0 01-1.187 2.043.5.5 0 01-.766-.643 5.86 5.86 0 001.014-1.745.5.5 0 01.642-.297z"></path></svg>
+      <h2 class="paste-heading">Banking AI Assistant</h2>
+    </div>
+    <div id="chat-messages" class="paste-chat-box"></div>
+    <div class="paste-chat-input">
+      <input type="text" id="message-input" class="paste-input" placeholder="Type a message..." />
+
+      <button class="paste-button" onclick="sendMessage()">Send</button>
+      <div class="ai-button-effect">
+        <button id="voice-toggle-btn" class="voice-button" onclick="toggleCall()">
+          <svg class="voice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <g>
+              <g>
+                <path d="m439.5,236c0-11.3-9.1-20.4-20.4-20.4s-20.4,9.1-20.4,20.4c0,70-64,126.9-142.7,126.9-78.7,0-142.7-56.9-142.7-126.9 0-11.3-9.1-20.4-20.4-20.4s-20.4,9.1-20.4,20.4c0,86.2 71.5,157.4 163.1,166.7v57.5h-23.6c-11.3,0-20.4,9.1-20.4,20.4 0,11.3 9.1,20.4 20.4,20.4h88c11.3,0 20.4-9.1 20.4-20.4 0-11.3-9.1-20.4-20.4-20.4h-23.6v-57.5c91.6-9.3 163.1-80.5 163.1-166.7z"/>
+                <path d="m256,323.5c51,0 92.3-41.3 92.3-92.3v-127.9c0-51-41.3-92.3-92.3-92.3s-92.3,41.3-92.3,92.3v127.9c0,51 41.3,92.3 92.3,92.3zm-52.3-220.2c0-28.8 23.5-52.3 52.3-52.3s52.3,23.5 52.3,52.3v127.9c0,28.8-23.5,52.3-52.3,52.3s-52.3-23.5-52.3-52.3v-127.9z"/>
+              </g>
+            </g>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="banking-mockup paste-box">
+    <h2 class="paste-heading">Your Account</h2>
+    <div class="banking-mockup-container">
+      <div class="banking-mockup-item">
+        <h3 class="paste-subheading">Account Balance</h3>
+        <p id="account-balance" class="paste-text">Loading...</p>
+      </div>
+      <div class="banking-mockup-item">
+        <h3 class="paste-subheading">Recent Transactions</h3>
+        <ul id="recent-transactions" class="paste-list"></ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="credit-card-mockup paste-box">
+    <h2 class="paste-heading">Your Credit Card</h2>
+    <div class="credit-card-mockup-container">
+      <div class="credit-card-mockup-item">
+        <h3 class="paste-subheading">Card Number</h3>
+        <p id="card-number" class="paste-text">Loading...</p>
+      </div>
+      <div class="credit-card-mockup-item">
+        <h3 class="paste-subheading">Next Payment</h3>
+        <p id="next-payment" class="paste-text">Loading...</p>
+        <p id="next-payment-date" class="paste-text"></p>
+        <p id="next-payment-status" class="paste-text"></p>
+      </div>
+    </div>
+  </div>
+    
 </body>
 </html>

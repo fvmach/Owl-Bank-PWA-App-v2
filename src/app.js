@@ -29,7 +29,7 @@ function getUserIdentity() {
   let identity = localStorage.getItem('twilio_identity');
 
   // Reset if identity is missing or invalid
-  if (!identity || identity.startsWith("user-fzk47")) {
+  if (!identity) {
     identity = `user-${Math.random().toString(36).substr(2, 9)}`;
     localStorage.setItem('twilio_identity', identity);
   }
@@ -154,8 +154,8 @@ async function initialize() {
         const messages = document.querySelectorAll(".chat-bubble.outgoing.sending");
         if (messages.length > 0) {
           const lastMessage = messages[messages.length - 1]; // Get the last "sending" message
-          lastMessage.classList.remove("sending"); // Remove "sending" state
-          lastMessage.querySelector(".status").textContent = "✓ Sent"; // Update status
+          lastMessage.classList.remove("✓"); // Remove "sending" state
+          lastMessage.querySelector(".status").textContent = "✓✓"; // Update status
           return;
         }
       }
@@ -241,8 +241,8 @@ async function sendMessage() {
     const sentMessage = await activeConversation.sendMessage(msgText);
 
     // 3. Update the message element once the message is successfully sent
-    messageElement.classList.remove("sending");
-    messageElement.querySelector(".status").textContent = "✓ Sent"; // Change status text
+    messageElement.classList.remove("✓");
+    messageElement.querySelector(".status").textContent = "✓✓"; // Change status text
 
     input.value = "";
   } catch (error) {
@@ -380,38 +380,48 @@ async function toggleCall() {
     const voiceButton = document.getElementById("voice-toggle-btn");
     const voiceIcon = document.getElementById("voice-icon");
 
-    if (isCallActive) {
+    if (isCallActive && currentCall) {
         // End the call
-        if (currentCall) {
-            console.log("Ending Twilio Voice call...");
-            currentCall.disconnect();
-        }
+        console.log("Ending Twilio Voice call...");
+        currentCall.disconnect();
         isCallActive = false;
+        currentCall = null;
         voiceButton.classList.remove("active");
         voiceIcon.src = "https://www.svgrepo.com/show/51954/microphone.svg"; // Normal mic icon
-    } else {
-        // Start the call
-        if (!voiceDevice) {
-            console.error("Twilio Voice is not initialized.");
+        return;
+    }
+
+    // Ensure voiceDevice is initialized
+    if (!voiceDevice) {
+        console.error("Twilio Voice is not initialized.");
+        return;
+    }
+
+    try {
+        console.log("Starting Twilio Voice call...");
+        
+        // Await the connection
+        currentCall = await voiceDevice.connect();
+
+        if (!currentCall) {
+            console.error("Failed to establish a Twilio Voice call.");
             return;
         }
 
-        console.log("Starting Twilio Voice call...");
-        currentCall = voiceDevice.connect();
+        isCallActive = true;
+        voiceButton.classList.add("active");
+        voiceIcon.src = "https://www.svgrepo.com/show/327436/mic-off.svg"; // Mic off icon
 
-        currentCall.on("accept", () => {
-            console.log("Call accepted.");
-            isCallActive = true;
-            voiceButton.classList.add("active");
-            voiceIcon.src = "https://www.svgrepo.com/show/327436/mic-off.svg"; // Mic off icon
-        });
-
+        currentCall.on("accept", () => console.log("Call accepted."));
         currentCall.on("disconnect", () => {
             console.log("Call ended.");
             isCallActive = false;
+            currentCall = null;
             voiceButton.classList.remove("active");
             voiceIcon.src = "https://www.svgrepo.com/show/51954/microphone.svg"; // Normal mic icon
         });
+    } catch (error) {
+        console.error("Error starting call:", error);
     }
 }
 
@@ -488,16 +498,128 @@ async function initialize() {
     }
 }
 
+/**
+ * Fetch user profile from the Segment Profile API
+ */
+async function fetchUserProfile() {
+  const userEmail = localStorage.getItem("user_email");
+
+  if (!userEmail) {
+    console.error("No user email found. Cannot fetch profile.");
+    return;
+  }
+
+  // Load from sessionStorage if available (prevents unnecessary API calls)
+  const storedProfile = sessionStorage.getItem("userProfile");
+  if (storedProfile) {
+    userProfile = JSON.parse(storedProfile);
+    return;
+  }
+
+  try {
+    const response = await fetch("https://owl-bank-finserv-demo-2134.twil.io/get-customer-profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: userEmail }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch profile.");
+    }
+
+    const data = await response.json();
+    userProfile = data?.profile?.traits || {};
+
+    // Store profile in sessionStorage
+    sessionStorage.setItem("userProfile", JSON.stringify(userProfile));
+
+    // Update UI
+    document.getElementById("profile-name").textContent = `${userProfile.first_name || "User"} ${userProfile.last_name || ""}`.trim();
+    
+    const avatarElement = document.getElementById("profile-avatar");
+    const profileAvatar = userProfile.avatar || "default-avatar.png";
+
+    if (profileAvatar !== "default-avatar.png") {
+      const imgElement = document.createElement("img");
+      imgElement.src = profileAvatar;
+      imgElement.alt = "User Avatar";
+      imgElement.className = "profile-avatar";
+      avatarElement.replaceWith(imgElement);
+    }
+
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+  }
+}
+
+/**
+ * Open Profile Modal using cached data
+ */
+document.getElementById("view-profile").addEventListener("click", () => {
+  if (Object.keys(userProfile).length === 0) {
+    console.error("No user profile data available.");
+    return;
+  }
+
+  const modalContent = document.getElementById("modal-content");
+  modalContent.innerHTML = `<span class="close">&times;</span><h2>User Profile</h2>`; // Reset modal content
+
+  // Loop through all traits and add them dynamically
+  Object.entries(userProfile).forEach(([key, value]) => {
+    const formattedKey = key.replace(/_/g, " "); // Replace underscores with spaces for readability
+    const traitElement = document.createElement("p");
+    traitElement.innerHTML = `<strong>${formattedKey}:</strong> ${value || "N/A"}`;
+    modalContent.appendChild(traitElement);
+  });
+
+  // Show modal
+  document.getElementById("profile-modal").classList.remove("hidden");
+
+  // Ensure close button works
+  document.querySelector(".close").addEventListener("click", () => {
+    document.getElementById("profile-modal").classList.add("hidden");
+  });
+});
+
+/**
+ * Handle profile dropdown toggle
+ */
+document.getElementById("profile-dropdown-container").addEventListener("click", (event) => {
+  event.stopPropagation();
+  const dropdown = document.getElementById("profile-dropdown");
+  dropdown.classList.toggle("hidden");
+});
+
+// Close dropdown when clicking outside
+document.addEventListener("click", () => {
+  document.getElementById("profile-dropdown").classList.add("hidden");
+});
+
+/**
+ * Logout function
+ */
+document.getElementById("logout").addEventListener("click", () => {
+  localStorage.clear();
+  sessionStorage.clear(); // Clear session storage as well
+  window.location.href = "login.html"; // Redirect to login page
+});
+
+// Fetch profile data after login
+document.addEventListener("DOMContentLoaded", () => {
+  fetchUserProfile();
+});
+
 
 
 // Initialize everything when the page loads
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Page loaded, running initialize...");
   initialize();
-  
+  fetchUserProfile();
+
   // Expose functions globally
   window.sendMessage = sendMessage;
+  
   // Expose voice functions globally
   window.toggleCall = toggleCall;
-
 });
